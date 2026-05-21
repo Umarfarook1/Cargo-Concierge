@@ -3,27 +3,35 @@
 import { motion } from "motion/react";
 import { RouteGraphic } from "./route-graphic";
 
+const STATS = [
+  { value: "12", label: "Airlines" },
+  { value: "48", label: "Lanes" },
+  { value: "30", label: "Eval cases" },
+  { value: "≈12s", label: "End to end" },
+];
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-[color:var(--paper-line)]">
-      <div className="absolute inset-0 dotgrid opacity-30 pointer-events-none" />
-      <RouteGraphic className="absolute -right-10 -top-6 w-[640px] max-w-[80vw] opacity-90 pointer-events-none" />
+      <div className="absolute inset-0 dotgrid opacity-[0.22] pointer-events-none" />
+      <RouteGraphic className="absolute -right-12 -top-8 w-[680px] max-w-[80vw] opacity-90 pointer-events-none" />
 
-      <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28">
-        <motion.p
+      <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-12 sm:pt-24 sm:pb-16">
+        <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.05 }}
-          className="font-mono uppercase tracking-[0.22em] text-[10px] text-[color:var(--ink-mute)]"
+          className="inline-flex items-center gap-2 font-mono uppercase tracking-[0.22em] text-[10px] text-[color:var(--ink-mute)]"
         >
-          For freight forwarders · agentic quote copilot
-        </motion.p>
+          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--amber)] dot-active" />
+          A copilot for freight forwarders
+        </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-5 font-display text-5xl sm:text-7xl leading-[0.95] tracking-tight max-w-3xl"
+          className="mt-4 font-display text-5xl sm:text-7xl leading-[0.95] tracking-tight max-w-3xl"
         >
           Air cargo quotes,{" "}
           <span className="italic text-[color:var(--amber)]">
@@ -37,35 +45,52 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-6 max-w-xl text-base sm:text-lg text-[color:var(--ink-soft)] leading-relaxed"
         >
-          Paste a quote request from a customer. Get ranked airline options and a draft reply in under fifteen seconds. No tab juggling, no copy-paste.
+          Paste a customer email asking for a rate. Get ranked airline options and a draft reply in under fifteen seconds. No tab juggling, no copy-paste, no rate-sheet PDFs.
         </motion.p>
 
-        <motion.div
+        <motion.dl
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)]"
+          className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 max-w-2xl"
         >
-          <Stat label="airlines" value="12" />
-          <span className="h-3 w-px bg-[color:var(--paper-line)]" />
-          <Stat label="lanes" value="48" />
-          <span className="h-3 w-px bg-[color:var(--paper-line)]" />
-          <Stat label="eval set" value="30" />
-          <span className="h-3 w-px bg-[color:var(--paper-line)]" />
-          <Stat label="p50 latency" value="~12s" />
+          {STATS.map((s) => (
+            <div key={s.label} className="border-l border-[color:var(--paper-line)] pl-3">
+              <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)]">
+                {s.label}
+              </dt>
+              <dd className="mt-1 font-display text-2xl sm:text-3xl tabular leading-none">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </motion.dl>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1.0 }}
+          className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--ink-mute)]"
+        >
+          <span>Try it below</span>
+          <motion.svg
+            width="22"
+            height="22"
+            viewBox="0 0 22 22"
+            fill="none"
+            animate={{ y: [0, 4, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <path
+              d="M11 4v14m-5-5 5 5 5-5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </motion.svg>
         </motion.div>
       </div>
     </section>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <span className="inline-flex items-baseline gap-2">
-      <span className="tabular text-[color:var(--ink)] text-base font-display not-italic">
-        {value}
-      </span>
-      <span>{label}</span>
-    </span>
   );
 }

@@ -20,9 +20,14 @@ export const STAGE_ORDER: Array<{ start: AgentStep["type"]; done: AgentStep["typ
 export function PipelineTimeline({ steps, error }: { steps: StepUI[]; error: string | null }) {
   if (steps.length === 0 && !error) {
     return (
-      <div className="font-mono text-xs uppercase tracking-wider text-[color:var(--ink-mute)]/60">
-        Pipeline idle
-      </div>
+      <ol className="space-y-3 opacity-50">
+        {STAGE_ORDER.map((s, i) => (
+          <li key={i} className="flex items-start gap-3 text-sm text-[color:var(--ink-mute)]">
+            <span className="mt-1 inline-block h-[15px] w-[15px] rounded-full border border-[color:var(--paper-line)] bg-[color:var(--paper)]" />
+            <span>{s.label}</span>
+          </li>
+        ))}
+      </ol>
     );
   }
 

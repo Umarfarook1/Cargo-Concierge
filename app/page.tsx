@@ -163,17 +163,18 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="h-[480px] rounded-lg border border-dashed border-[color:var(--paper-line)] flex items-center justify-center"
+                className="rounded-lg border border-[color:var(--paper-line)] bg-[color:var(--paper)] p-6 space-y-3"
               >
-                <div className="text-center space-y-3">
-                  <div className="flex justify-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[color:var(--amber)] dot-active" style={{ animationDelay: "0ms" }} />
-                    <span className="h-2 w-2 rounded-full bg-[color:var(--amber)] dot-active" style={{ animationDelay: "200ms" }} />
-                    <span className="h-2 w-2 rounded-full bg-[color:var(--amber)] dot-active" style={{ animationDelay: "400ms" }} />
-                  </div>
-                  <p className="font-display italic text-lg text-[color:var(--ink-soft)]">
-                    Reading the request
-                  </p>
+                <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--ink-mute)]">
+                  Working
+                </div>
+                <p className="font-display italic text-2xl text-[color:var(--ink)]">
+                  Reading the request...
+                </p>
+                <div className="space-y-2 pt-2">
+                  <div className="h-3 rounded shimmer w-full" />
+                  <div className="h-3 rounded shimmer w-5/6" />
+                  <div className="h-3 rounded shimmer w-4/6" />
                 </div>
               </motion.div>
             )}

@@ -4,21 +4,58 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import type { RankedOption, ShipmentRequest } from "@/lib/schemas";
 
+const PREVIEW_STEPS = [
+  { num: "01", title: "Read", body: "The agent extracts route, weight, commodity, ready date from the email." },
+  { num: "02", title: "Query", body: "Pulls every airline that flies the lane with matching capacity and handling." },
+  { num: "03", title: "Rank", body: "Scores options on price, transit, reliability, capacity. Writes a rationale." },
+  { num: "04", title: "Draft", body: "Composes a professional quote response you can copy and send." },
+];
+
 export function EmptyState() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative h-full min-h-[480px] rounded-lg border border-dashed border-[color:var(--paper-line)] bg-[color:var(--paper-soft)]/40 p-10 flex flex-col items-center justify-center text-center"
+      className="rounded-lg border border-[color:var(--paper-line)] bg-[color:var(--paper)] p-6 sm:p-8"
     >
-      <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--ink-mute)] mb-3">
-        Awaiting input
-      </div>
-      <p className="font-display italic text-2xl text-[color:var(--ink-soft)] max-w-sm">
-        Paste a forwarder email on the left, or try one of the four samples.
-      </p>
-      <div className="mt-8 font-mono text-[11px] text-[color:var(--ink-mute)]/70 max-w-md leading-relaxed">
-        The pipeline extracts the shipment, queries every airline that flies the route, ranks the options, and drafts a reply you can send.
+      <header className="mb-6">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--ink-mute)]">
+          What you&apos;ll get
+        </p>
+        <h2 className="mt-2 font-display text-2xl sm:text-3xl leading-tight text-[color:var(--ink)]">
+          Four stages, about twelve seconds, one ready-to-send reply.
+        </h2>
+      </header>
+
+      <ol className="space-y-4">
+        {PREVIEW_STEPS.map((s, i) => (
+          <motion.li
+            key={s.num}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 * i + 0.3 }}
+            className="flex items-start gap-4 group"
+          >
+            <span className="font-mono text-[11px] tabular text-[color:var(--amber)] mt-1 shrink-0 tracking-wider">
+              {s.num}
+            </span>
+            <div>
+              <div className="font-medium text-[color:var(--ink)]">{s.title}</div>
+              <p className="mt-0.5 text-sm text-[color:var(--ink-soft)] leading-relaxed">
+                {s.body}
+              </p>
+            </div>
+          </motion.li>
+        ))}
+      </ol>
+
+      <div className="mt-7 pt-5 border-t border-[color:var(--paper-line)] flex items-center gap-2 text-xs text-[color:var(--ink-mute)]">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+          <path d="M2 7l3 3 7-7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="font-mono uppercase tracking-wider text-[10px]">
+          Demo data · 12 airlines · 48 lanes seeded
+        </span>
       </div>
     </motion.div>
   );
