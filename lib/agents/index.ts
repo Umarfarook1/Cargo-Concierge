@@ -1,8 +1,13 @@
 import { extractShipment } from "./extraction";
 import { queryRates } from "./rate-query";
-import { rankOptions } from "./ranker";
+import {
+  rankOptions,
+  scoreOptions,
+  generateRationales,
+  generateRecommendation,
+} from "./ranker";
 import { draftQuoteEmail } from "./drafter";
-import type { AgentStep, QuoteResponse } from "../schemas";
+import type { AgentStep, QuoteResponse, RankedOption } from "../schemas";
 
 export type RunOptions = {
   skipRanker?: boolean;
@@ -31,36 +36,40 @@ export async function* runQuotePipeline(
     }
 
     yield { type: "ranker_start" };
-    const { ranked, recommendation_index, recommendation_reasoning } = opts.skipRanker
-      ? {
-          ranked: options.map((o) => ({
-            ...o,
-            composite_score: 0,
-            score_breakdown: {
-              price_score: 0,
-              transit_score: 0,
-              reliability_score: 0,
-              capacity_score: 0,
-            },
-            rationale: "",
-          })),
-          recommendation_index: 0,
-          recommendation_reasoning: "Ranker disabled in ablation mode.",
-        }
-      : await rankOptions(request, options);
-    yield { type: "ranker_done", ranked };
+    const scored = scoreOptions(request, options);
+    yield { type: "drafter_start" };
 
-    let draft_email = "";
+    let ranked: RankedOption[];
+    let recommendation_reasoning: string;
+    let draft_email: string;
+
+    if (opts.skipRanker) {
+      ranked = scored.map((o) => ({ ...o, rationale: "" }));
+      recommendation_reasoning = "Ranker disabled in ablation mode.";
+      draft_email = opts.skipDrafter ? "" : await draftQuoteEmail(request, ranked);
+    } else {
+      const [rationales, recommendation, draftEmail] = await Promise.all([
+        generateRationales(request, scored),
+        generateRecommendation(request, scored),
+        opts.skipDrafter ? Promise.resolve("") : draftQuoteEmail(request, scored),
+      ]);
+      rationales.forEach((r, i) => {
+        scored[i].rationale = r;
+      });
+      ranked = scored;
+      recommendation_reasoning = recommendation;
+      draft_email = draftEmail;
+    }
+
+    yield { type: "ranker_done", ranked };
     if (!opts.skipDrafter) {
-      yield { type: "drafter_start" };
-      draft_email = await draftQuoteEmail(request, ranked);
       yield { type: "drafter_done", email: draft_email };
     }
 
     const response: QuoteResponse = {
       request,
       options: ranked,
-      recommendation_index,
+      recommendation_index: 0,
       recommendation_reasoning,
       draft_email,
     };

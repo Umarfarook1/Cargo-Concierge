@@ -38,20 +38,15 @@ Hard rules:
   model: modelChain(),
 });
 
-export async function rankOptions(
-  req: ShipmentRequest,
-  options: RateOption[],
-): Promise<{ ranked: RankedOption[]; recommendation_index: number; recommendation_reasoning: string }> {
-  if (options.length === 0) {
-    return { ranked: [], recommendation_index: -1, recommendation_reasoning: "No matching options found." };
-  }
+export function scoreOptions(req: ShipmentRequest, options: RateOption[]): RankedOption[] {
+  if (options.length === 0) return [];
 
   const weights = RankerWeights[req.service_level];
-
   const priceScore = minMax(options.map((o) => o.price_breakdown.total_usd), true);
   const transitScore = minMax(options.map((o) => o.transit_days), true);
   const reliabilityScore = minMax(options.map((o) => o.reliability_score), false);
-  const capacityScore = (o: RateOption) => (o.capacity_status === "confirmed" ? 100 : o.capacity_status === "tentative" ? 60 : 25);
+  const capacityScore = (o: RateOption) =>
+    o.capacity_status === "confirmed" ? 100 : o.capacity_status === "tentative" ? 60 : 25;
 
   const scored: RankedOption[] = options.map((o) => {
     const breakdown = {
@@ -65,7 +60,6 @@ export async function rankOptions(
       breakdown.transit_score * weights.transit +
       breakdown.reliability_score * weights.reliability +
       breakdown.capacity_score * weights.capacity;
-
     return {
       ...o,
       composite_score: Math.round(composite),
@@ -75,15 +69,35 @@ export async function rankOptions(
   });
 
   scored.sort((a, b) => b.composite_score - a.composite_score);
+  return scored;
+}
 
-  const rationaleTargets = scored.slice(0, Math.min(scored.length, 3));
-  const rationales = await Promise.all(
-    rationaleTargets.map(async (opt, idx) => {
+const recommendationAgent = new Agent({
+  id: "recommendation",
+  name: "Recommendation Writer",
+  description: "Writes one-paragraph recommendations for the top air cargo option.",
+  instructions: `Write a concise recommendation paragraph (60 to 90 words) for a freight forwarder. Pick option 1 and explain why versus the runners-up. Name the specific numeric tradeoff (price gap, transit gap, reliability gap).
+
+Hard rules:
+- No marketing language.
+- Banned words: boasts, leverages, robust, seamless, empowers, streamlines, optimal, cutting-edge, comprehensive, delve, harnesses, top-tier, best-in-class, world-class.
+- Do not start with "In conclusion", "Overall", "This option". Lead with the airline name.
+- Plain professional English. Write to a freight forwarder, not a customer.`,
+  model: modelChain(),
+});
+
+export async function generateRationales(
+  req: ShipmentRequest,
+  scored: RankedOption[],
+): Promise<string[]> {
+  const targets = scored.slice(0, Math.min(scored.length, 3));
+  return Promise.all(
+    targets.map(async (opt, idx) => {
       const result = await RATIONALE_AGENT.generate(
         [
           {
             role: "user",
-            content: `Shipment: ${req.chargeable_weight_kg}kg ${req.commodity_type} from ${req.origin_iata} to ${req.destination_iata}, service level ${req.service_level}.\n\nOption: ${opt.airline_name} (${opt.airline_iata}), $${opt.price_breakdown.total_usd}, ${opt.transit_days} days transit, reliability ${opt.reliability_score}, capacity ${opt.capacity_status}. Rank: ${idx + 1} of ${rationaleTargets.length}. Composite score: ${opt.composite_score}.\n\nScore breakdown: price ${opt.score_breakdown.price_score}, transit ${opt.score_breakdown.transit_score}, reliability ${opt.score_breakdown.reliability_score}, capacity ${opt.score_breakdown.capacity_score}.`,
+            content: `Shipment: ${req.chargeable_weight_kg}kg ${req.commodity_type} from ${req.origin_iata} to ${req.destination_iata}, service level ${req.service_level}.\n\nOption: ${opt.airline_name} (${opt.airline_iata}), $${opt.price_breakdown.total_usd}, ${opt.transit_days} days transit, reliability ${opt.reliability_score}, capacity ${opt.capacity_status}. Rank: ${idx + 1} of ${targets.length}. Composite score: ${opt.composite_score}.\n\nScore breakdown: price ${opt.score_breakdown.price_score}, transit ${opt.score_breakdown.transit_score}, reliability ${opt.score_breakdown.reliability_score}, capacity ${opt.score_breakdown.capacity_score}.`,
           },
         ],
         { structuredOutput: { schema: RationaleOutput } },
@@ -91,46 +105,47 @@ export async function rankOptions(
       return (result.object as z.infer<typeof RationaleOutput>).rationale;
     }),
   );
+}
 
-  rationaleTargets.forEach((opt, idx) => {
-    opt.rationale = rationales[idx];
-  });
-
+export async function generateRecommendation(
+  req: ShipmentRequest,
+  scored: RankedOption[],
+): Promise<string> {
+  if (scored.length === 0) return "No matching options found.";
   const top = scored[0];
-  const winnerReasoningOptions = scored.slice(0, Math.min(3, scored.length));
-  const winnerSummary = winnerReasoningOptions
-    .map((o, i) => `${i + 1}. ${o.airline_name} $${o.price_breakdown.total_usd} ${o.transit_days}d reliability ${o.reliability_score}`)
+  const summary = scored
+    .slice(0, Math.min(3, scored.length))
+    .map(
+      (o, i) =>
+        `${i + 1}. ${o.airline_name} $${o.price_breakdown.total_usd} ${o.transit_days}d reliability ${o.reliability_score}`,
+    )
     .join("\n");
-
-  const recommendationAgent = new Agent({
-    id: "recommendation",
-    name: "Recommendation Writer",
-    description: "Writes one-paragraph recommendations for the top air cargo option.",
-    instructions: `Write a concise recommendation paragraph (60 to 90 words) for a freight forwarder. Pick option 1 and explain why versus the runners-up. Name the specific numeric tradeoff (price gap, transit gap, reliability gap).
-
-Hard rules:
-- No marketing language.
-- Banned words: boasts, leverages, robust, seamless, empowers, streamlines, optimal, cutting-edge, comprehensive, delve, harnesses, top-tier, best-in-class, world-class.
-- Do not start with "In conclusion", "Overall", "This option". Lead with the airline name.
-- Plain professional English. Write to a freight forwarder, not a customer.`,
-    model: modelChain(),
-  });
-
   const recResult = await recommendationAgent.generate(
     [
       {
         role: "user",
-        content: `Shipment: ${req.chargeable_weight_kg}kg ${req.commodity_type} from ${req.origin_iata} to ${req.destination_iata}, service level ${req.service_level}.\n\nTop options:\n${winnerSummary}\n\nRecommendation should pick option 1 (${top.airline_name}) and explain the comparison.`,
+        content: `Shipment: ${req.chargeable_weight_kg}kg ${req.commodity_type} from ${req.origin_iata} to ${req.destination_iata}, service level ${req.service_level}.\n\nTop options:\n${summary}\n\nRecommendation should pick option 1 (${top.airline_name}) and explain the comparison.`,
       },
     ],
     { structuredOutput: { schema: z.object({ recommendation: z.string() }) } },
   );
+  return (recResult.object as { recommendation: string }).recommendation;
+}
 
-  const recommendation = (recResult.object as { recommendation: string }).recommendation;
-
-  return {
-    ranked: scored,
-    recommendation_index: 0,
-    recommendation_reasoning: recommendation,
-  };
+export async function rankOptions(
+  req: ShipmentRequest,
+  options: RateOption[],
+): Promise<{ ranked: RankedOption[]; recommendation_index: number; recommendation_reasoning: string }> {
+  const scored = scoreOptions(req, options);
+  if (scored.length === 0) {
+    return { ranked: [], recommendation_index: -1, recommendation_reasoning: "No matching options found." };
+  }
+  const [rationales, recommendation] = await Promise.all([
+    generateRationales(req, scored),
+    generateRecommendation(req, scored),
+  ]);
+  rationales.forEach((r, i) => {
+    scored[i].rationale = r;
+  });
+  return { ranked: scored, recommendation_index: 0, recommendation_reasoning: recommendation };
 }
