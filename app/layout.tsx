@@ -31,6 +31,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-color-scheme="light"
+      style={{ colorScheme: "light" }}
       className={`${display.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

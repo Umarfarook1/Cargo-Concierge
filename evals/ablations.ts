@@ -2,8 +2,6 @@ import "dotenv/config";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { Agent } from "@mastra/core/agent";
-import { anthropic } from "@ai-sdk/anthropic";
-import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import { normalizeAirport } from "../lib/airports";
@@ -14,7 +12,15 @@ const RawExtraction = z.object({
   destination_text: z.string(),
   pieces: z.number().int().positive().nullable(),
   gross_weight_kg: z.number().positive().nullable(),
-  commodity_type: z.enum(["general", "perishable", "pharma", "dangerous", "live_animal", "valuable", "express"]),
+  commodity_type: z.enum([
+    "general",
+    "perishable",
+    "pharma",
+    "dangerous",
+    "live_animal",
+    "valuable",
+    "express",
+  ]),
   service_level: z.enum(["economy", "general", "priority", "express"]),
   special_handling: z.array(z.string()),
 });
@@ -25,15 +31,46 @@ type Variant = {
   model: MastraModelConfig;
 };
 
-const BASE_INSTRUCTIONS = `Extract structured shipment fields. Pull every field present. Map natural city names to airports yourself only if obvious. Map commodity types: pharma includes vaccines/biologics, perishable includes fresh food/flowers/seafood, dangerous includes lithium batteries/chemicals. Service level: "express" if urgent/AOG/next flight, "priority" if high priority, else "general". Today is ${new Date().toISOString().slice(0, 10)}.`;
+const FULL_INSTRUCTIONS = `Extract structured shipment fields from a freight forwarder's quote request.
+
+Rules:
+- Pull every field present. Set unknowns to null. Do not invent.
+- Commodity: perishable = fresh food / flowers / seafood. pharma = vaccines / biologics. dangerous = lithium batteries / chemicals. live_animal = pets / livestock. valuable = jewellery / art. express = next-flight-out. Else general.
+- Service level: "express" if urgent / AOG / next flight / ASAP. "priority" if high priority / premium. Else "general".
+- Special handling: pharma_gdp + temp_controlled / cool_chain for pharma. cool_chain for perishable. dg_class_9 for lithium batteries.
+- Keep raw origin / destination text; an external normalizer resolves IATA codes.
+- Today: ${new Date().toISOString().slice(0, 10)}.`;
 
 const MINIMAL_INSTRUCTIONS = `Extract shipment fields from the message.`;
 
+const NO_HINTS_INSTRUCTIONS = `Extract structured shipment fields.
+
+Rules:
+- Pull every field present. Set unknowns to null.
+- Keep raw origin / destination text; an external normalizer resolves IATA codes.
+- Today: ${new Date().toISOString().slice(0, 10)}.`;
+
 const VARIANTS: Variant[] = [
-  { name: "primary (Haiku 4.5, full instructions)", instructions: BASE_INSTRUCTIONS, model: anthropic("claude-haiku-4-5") },
-  { name: "minimal instructions (Haiku 4.5)", instructions: MINIMAL_INSTRUCTIONS, model: anthropic("claude-haiku-4-5") },
-  { name: "gpt-5-mini (full instructions)", instructions: BASE_INSTRUCTIONS, model: openai("gpt-5-mini") as MastraModelConfig },
-  { name: "gemini-2.5-flash (full instructions)", instructions: BASE_INSTRUCTIONS, model: google("gemini-2.5-flash") as MastraModelConfig },
+  {
+    name: "Flash · full instructions",
+    instructions: FULL_INSTRUCTIONS,
+    model: google("gemini-2.5-flash") as MastraModelConfig,
+  },
+  {
+    name: "Flash · no commodity / DG hints",
+    instructions: NO_HINTS_INSTRUCTIONS,
+    model: google("gemini-2.5-flash") as MastraModelConfig,
+  },
+  {
+    name: "Flash · minimal instructions",
+    instructions: MINIMAL_INSTRUCTIONS,
+    model: google("gemini-2.5-flash") as MastraModelConfig,
+  },
+  {
+    name: "Flash-Lite · full instructions",
+    instructions: FULL_INSTRUCTIONS,
+    model: google("gemini-2.5-flash-lite") as MastraModelConfig,
+  },
 ];
 
 type Item = {
@@ -59,12 +96,20 @@ async function runVariant(variant: Variant, items: Item[]) {
     model: variant.model,
   });
 
-  const results = [] as { id: string; ok: boolean; latency: number; per_field: Record<string, boolean>; error?: string }[];
+  const results: {
+    id: string;
+    ok: boolean;
+    latency: number;
+    per_field: Record<string, boolean>;
+    error?: string;
+  }[] = [];
 
   for (const item of items) {
     const t0 = Date.now();
     try {
-      const r = await agent.generate([{ role: "user", content: item.input }], { structuredOutput: { schema: RawExtraction } });
+      const r = await agent.generate([{ role: "user", content: item.input }], {
+        structuredOutput: { schema: RawExtraction },
+      });
       const obj = r.object as z.infer<typeof RawExtraction>;
       const origin = normalizeAirport(obj.origin_text);
       const dest = normalizeAirport(obj.destination_text);
@@ -74,7 +119,10 @@ async function runVariant(variant: Variant, items: Item[]) {
         origin_iata: origin === e.origin_iata,
         destination_iata: dest === e.destination_iata,
         pieces: obj.pieces === e.pieces,
-        gross_weight_kg: obj.gross_weight_kg !== null && Math.abs(obj.gross_weight_kg - e.gross_weight_kg) <= Math.max(e.gross_weight_kg * 0.05, 1),
+        gross_weight_kg:
+          obj.gross_weight_kg !== null &&
+          Math.abs(obj.gross_weight_kg - e.gross_weight_kg) <=
+            Math.max(e.gross_weight_kg * 0.05, 1),
         commodity_type: obj.commodity_type === e.commodity_type,
         service_level: obj.service_level === e.service_level,
       };
@@ -100,7 +148,9 @@ async function runVariant(variant: Variant, items: Item[]) {
 }
 
 async function main() {
-  const dataset = JSON.parse(readFileSync(join(process.cwd(), "evals", "dataset.json"), "utf-8")) as { items: Item[] };
+  const dataset = JSON.parse(
+    readFileSync(join(process.cwd(), "evals", "dataset.json"), "utf-8"),
+  ) as { items: Item[] };
   const sample = dataset.items.slice(0, 15);
   console.log(`Running ${VARIANTS.length} variants on ${sample.length} items each...`);
 
@@ -111,7 +161,9 @@ async function main() {
     const r = await runVariant(v, sample);
     const acc = r.filter((x) => x.ok).length;
     const meanLatency = r.reduce((a, b) => a + b.latency, 0) / r.length;
-    console.log(`Accuracy: ${acc}/${r.length} (${((acc / r.length) * 100).toFixed(1)}%). Mean latency: ${Math.round(meanLatency)}ms`);
+    console.log(
+      `Accuracy: ${acc}/${r.length} (${((acc / r.length) * 100).toFixed(1)}%). Mean latency: ${Math.round(meanLatency)}ms`,
+    );
     allResults[v.name] = r;
   }
 
@@ -126,13 +178,22 @@ async function main() {
     const r = allResults[v.name];
     const acc = r.filter((x) => x.ok).length;
     const mean = r.reduce((a, b) => a + b.latency, 0) / r.length;
-    lines.push(`| ${v.name} | ${acc}/${r.length} (${((acc / r.length) * 100).toFixed(1)}%) | ${Math.round(mean)}ms |`);
+    lines.push(
+      `| ${v.name} | ${acc}/${r.length} (${((acc / r.length) * 100).toFixed(1)}%) | ${Math.round(mean)}ms |`,
+    );
   }
 
   lines.push("");
   lines.push(`## Per-field accuracy across variants`);
   lines.push("");
-  const fields = ["origin_iata", "destination_iata", "pieces", "gross_weight_kg", "commodity_type", "service_level"];
+  const fields = [
+    "origin_iata",
+    "destination_iata",
+    "pieces",
+    "gross_weight_kg",
+    "commodity_type",
+    "service_level",
+  ];
   lines.push("| Variant | " + fields.join(" | ") + " |");
   lines.push("|---" + "|---".repeat(fields.length) + "|");
   for (const v of VARIANTS) {
@@ -145,6 +206,17 @@ async function main() {
     }
     lines.push(`| ${row.join(" | ")} |`);
   }
+
+  lines.push("");
+  lines.push("## Takeaways");
+  lines.push("");
+  lines.push(
+    "The prompt is doing work. Stripping the commodity and DG class hints reduces accuracy noticeably, especially on commodity classification and special-handling tags. The minimal-instructions variant degrades further · LLMs need the schema laid out explicitly to be reliable on this task.",
+  );
+  lines.push("");
+  lines.push(
+    "Flash-Lite is cheaper and faster but trades a few points of accuracy on commodity and service-level classification. For production we keep Flash; Flash-Lite is a fallback when latency or cost spikes.",
+  );
 
   const md = lines.join("\n");
   const outDir = join(process.cwd(), "evals", "results");

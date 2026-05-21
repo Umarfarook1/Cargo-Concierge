@@ -76,7 +76,7 @@ export async function rankOptions(
 
   scored.sort((a, b) => b.composite_score - a.composite_score);
 
-  const rationaleTargets = scored.slice(0, Math.min(scored.length, 5));
+  const rationaleTargets = scored.slice(0, Math.min(scored.length, 3));
   const rationales = await Promise.all(
     rationaleTargets.map(async (opt, idx) => {
       const result = await RATIONALE_AGENT.generate(

@@ -1,0 +1,292 @@
+{
+  "summary": {
+    "field_metrics": [
+      {
+        "field": "origin_iata",
+        "correct": 0,
+        "total": 0
+      },
+      {
+        "field": "destination_iata",
+        "correct": 0,
+        "total": 0
+      },
+      {
+        "field": "pieces",
+        "correct": 0,
+        "total": 0
+      },
+      {
+        "field": "gross_weight_kg",
+        "correct": 0,
+        "total": 0
+      },
+      {
+        "field": "commodity_type",
+        "correct": 0,
+        "total": 0
+      },
+      {
+        "field": "service_level",
+        "correct": 0,
+        "total": 0
+      },
+      {
+        "field": "special_handling_exact",
+        "correct": 0,
+        "total": 0
+      }
+    ],
+    "total_correct": 0,
+    "total": 30,
+    "latencies": {
+      "p50": 7069,
+      "p95": 7098,
+      "mean": 7083.5
+    },
+    "errors": [
+      "ex-001: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-002: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-003: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-004: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-005: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-006: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-007: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-008: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-009: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-010: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-011: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-012: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-013: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-014: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-015: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-016: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-017: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-018: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-019: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-020: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-021: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-022: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-023: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-024: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-025: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-026: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-027: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-028: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-029: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "ex-030: Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable."
+    ]
+  },
+  "results": [
+    {
+      "id": "ex-001",
+      "latency_ms": 7491,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-002",
+      "latency_ms": 7071,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-003",
+      "latency_ms": 7090,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-004",
+      "latency_ms": 7098,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-005",
+      "latency_ms": 7078,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-006",
+      "latency_ms": 7086,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-007",
+      "latency_ms": 7050,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-008",
+      "latency_ms": 7079,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-009",
+      "latency_ms": 7071,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-010",
+      "latency_ms": 7066,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-011",
+      "latency_ms": 7047,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-012",
+      "latency_ms": 7081,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-013",
+      "latency_ms": 7062,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-014",
+      "latency_ms": 7083,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-015",
+      "latency_ms": 7056,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-016",
+      "latency_ms": 7062,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-017",
+      "latency_ms": 7062,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-018",
+      "latency_ms": 7063,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-019",
+      "latency_ms": 7055,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-020",
+      "latency_ms": 7056,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-021",
+      "latency_ms": 7055,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-022",
+      "latency_ms": 7068,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-023",
+      "latency_ms": 7062,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-024",
+      "latency_ms": 7064,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-025",
+      "latency_ms": 7071,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-026",
+      "latency_ms": 7069,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-027",
+      "latency_ms": 7078,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-028",
+      "latency_ms": 7084,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-029",
+      "latency_ms": 7082,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    },
+    {
+      "id": "ex-030",
+      "latency_ms": 7065,
+      "ok": false,
+      "error": "Google Generative AI API key is missing. Pass it using the 'apiKey' parameter or the GOOGLE_GENERATIVE_AI_API_KEY environment variable.",
+      "per_field": {}
+    }
+  ]
+}

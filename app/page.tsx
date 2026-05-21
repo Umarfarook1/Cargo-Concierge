@@ -8,6 +8,7 @@ import { Hero } from "@/components/hero";
 import { QuoteForm } from "@/components/quote-form";
 import { PipelineTimeline, STAGE_ORDER, type StepUI } from "@/components/pipeline-timeline";
 import { EmptyState, ShipmentCard, RankedOptions, EmailDraft } from "@/components/results";
+import { Architecture } from "@/components/architecture";
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -182,7 +183,9 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="mt-16 border-t border-[color:var(--paper-line)]">
+      <Architecture />
+
+      <footer className="mt-0 border-t border-[color:var(--paper-line)]">
         <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
             <div>

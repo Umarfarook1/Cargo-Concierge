@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #faf8f3;
-  --paper-soft: #f3efe5;
-  --paper-line: #e6e0d0;
-  --ink: #1a1814;
-  --ink-soft: #4a4640;
-  --ink-mute: #7a7468;
-  --amber: #c8612a;
-  --amber-soft: #e89160;
-  --amber-bg: #fbeadb;
-  --moss: #5e7a3d;
-  --rust: #a8401e;
-  --cream: #f5efe0;
+  color-scheme: light;
+  --paper: #fbfaf7;
+  --paper-soft: #f3f0e7;
+  --paper-line: #e3ddca;
+  --ink: #161310;
+  --ink-soft: #44403a;
+  --ink-mute: #807868;
+  --amber: #d2682a;
+  --amber-soft: #ed9d61;
+  --amber-bg: #fde8d4;
+  --moss: #4e7e3a;
+  --moss-bg: #e6efd9;
+  --rust: #b0421e;
+  --cream: #faf3e0;
 }
 
 @theme inline {
@@ -28,6 +30,7 @@
   --color-amber-soft: var(--amber-soft);
   --color-amber-bg: var(--amber-bg);
   --color-moss: var(--moss);
+  --color-moss-bg: var(--moss-bg);
   --color-rust: var(--rust);
   --color-cream: var(--cream);
   --font-display: var(--font-display);
@@ -35,43 +38,19 @@
   --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #0e0c08;
-    --paper-soft: #181510;
-    --paper-line: #2a251c;
-    --ink: #f0ead8;
-    --ink-soft: #c4bda8;
-    --ink-mute: #7a7468;
-    --amber: #e89160;
-    --amber-soft: #c8612a;
-    --amber-bg: #2a1f14;
-    --moss: #98b46f;
-    --rust: #d4673a;
-    --cream: #1a160e;
-  }
-}
-
 html,
 body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+  color-scheme: light;
 }
 
 body {
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(200, 97, 42, 0.05), transparent 40%),
-    radial-gradient(circle at 92% 88%, rgba(94, 122, 61, 0.04), transparent 45%);
+    radial-gradient(circle at 12% 15%, rgba(210, 104, 42, 0.07), transparent 38%),
+    radial-gradient(circle at 92% 88%, rgba(78, 126, 58, 0.05), transparent 45%);
   background-attachment: fixed;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-image:
-      radial-gradient(circle at 12% 18%, rgba(232, 145, 96, 0.08), transparent 40%),
-      radial-gradient(circle at 92% 88%, rgba(152, 180, 111, 0.04), transparent 45%);
-  }
 }
 
 .font-display {
@@ -106,7 +85,7 @@ body {
     opacity: 1;
   }
   50% {
-    opacity: 0.55;
+    opacity: 0.5;
   }
 }
 
@@ -138,4 +117,19 @@ body {
 
 .dot-active {
   animation: pulse-soft 1.4s ease-in-out infinite;
+}
+
+.paper-card {
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: 10px;
+}
+
+.paper-card-elevated {
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: 10px;
+  box-shadow:
+    0 1px 0 rgba(20, 16, 12, 0.02),
+    0 8px 24px -16px rgba(60, 50, 30, 0.18);
 }

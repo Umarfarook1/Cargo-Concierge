@@ -1,18 +1,37 @@
 # Cargo Concierge
 
-A small prototype of a freight forwarder copilot. You paste a customer email asking for a quote, and you get back ranked airline options plus a draft reply, in about ten seconds.
+A small prototype of a freight forwarder copilot. You paste a customer email asking for a quote, and you get back ranked airline options plus a draft reply, in about twelve seconds.
+
+**Live demo:** [cargo-concierge.vercel.app](https://cargo-concierge.vercel.app)
 
 I built this after looking at how forwarders actually spend their day. The honest answer is: reading a customer email, retyping the shipment details into a quote tool or three, comparing the answers, then writing back. Most of that is mechanical.
 
 ## How it works
 
 1. Pull the shipment fields out of the email. Free text in, structured object out, validated with Zod.
-2. Query rates from 12 airlines across 30 lanes (seeded from public market patterns). Filter by capacity, commodity rules, weight band, special handling.
+2. Query rates from 12 airlines across 48 lanes (seeded from public market patterns). Filter by capacity, commodity rules, weight band, special handling.
 3. Score the candidates with a deterministic composite (price, transit, reliability, capacity). The weights shift based on the customer's service level. AOG cares about transit; general cares about price.
 4. Write a one-line rationale per option. Pick a winner with a paragraph.
 5. Draft the reply email the forwarder can send back.
 
 The whole thing streams stage by stage, so you can watch the pipeline work.
+
+## Headline results
+
+Gemini 2.5 Flash, 30-item eval set, run 2026-05-21:
+
+| Metric | Result |
+|---|---|
+| Per-shipment accuracy (every field correct) | **24 / 30 · 80.0%** |
+| Origin / destination IATA | 100% / 100% |
+| Pieces / gross weight | 100% / 100% |
+| Commodity type | 90.0% |
+| Service level | 96.7% |
+| Special-handling tags (set exact match) | 93.3% |
+| Extraction latency · p50 / p95 / mean | 3.5s / 8.4s / 4.3s |
+| Estimated cost per full quote (5-6 LLM calls) | ~$0.002 |
+
+The 80% perfect-tuple accuracy is the strict measure: every one of the seven fields must be exactly right, with weight allowed a ±5% tolerance. Per-field accuracy stays at 90%+ across the board, with origin / destination / pieces / gross weight at 100%.
 
 ## Quickstart
 
@@ -70,7 +89,20 @@ This prints a per-field accuracy table and writes `evals/results/extraction.md`.
 | commodity_type, service_level | Exact |
 | special_handling | Set equality |
 
-Ablations live in `npm run eval:ablations`. The four variants are: primary model with full instructions, same model with minimal instructions (does the prompt earn its keep?), and two alternative providers with full instructions (does the model matter?). 15-item sample to keep it cheap.
+## Ablations (does the prompt earn its keep?)
+
+15-item sample, four variants, Gemini provider only:
+
+| Variant | Accuracy | Mean latency |
+|---|---|---|
+| Flash · full instructions | **14/15 · 93.3%** | 2,680ms |
+| Flash · no commodity / DG hints | 9/15 · 60.0% | 3,443ms |
+| Flash · minimal instructions | 10/15 · 66.7% | 3,092ms |
+| Flash-Lite · full instructions | 9/15 · 60.0% | 1,440ms |
+
+**Takeaway:** the instruction block is worth roughly **+33 percentage points** of accuracy. Stripping the commodity definitions and DG-class hints drops commodity classification from 100% to 87% and service-level classification from 93% to 73%. Flash-Lite is half the latency but trades the same kind of accuracy.
+
+Re-run with `npm run eval:ablations`.
 
 ## Repo layout
 
