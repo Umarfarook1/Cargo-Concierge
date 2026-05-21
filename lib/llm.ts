@@ -3,9 +3,9 @@ import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import type { MastraModelConfig } from "@mastra/core/llm";
 
-const PRIMARY = process.env.PRIMARY_MODEL ?? "google:gemini-2.5-flash";
-const FALLBACK = process.env.FALLBACK_MODEL ?? "google:gemini-2.5-flash";
-const SECONDARY_FALLBACK = process.env.SECONDARY_FALLBACK_MODEL ?? "google:gemini-2.5-flash";
+const PRIMARY = process.env.PRIMARY_MODEL || "google:gemini-2.5-flash";
+const FALLBACK = process.env.FALLBACK_MODEL || "google:gemini-2.5-flash";
+const SECONDARY_FALLBACK = process.env.SECONDARY_FALLBACK_MODEL || "google:gemini-2.5-flash";
 
 function build(spec: string): MastraModelConfig {
   const [provider, model] = spec.split(":");

@@ -1,26 +1,141 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #faf8f3;
+  --paper-soft: #f3efe5;
+  --paper-line: #e6e0d0;
+  --ink: #1a1814;
+  --ink-soft: #4a4640;
+  --ink-mute: #7a7468;
+  --amber: #c8612a;
+  --amber-soft: #e89160;
+  --amber-bg: #fbeadb;
+  --moss: #5e7a3d;
+  --rust: #a8401e;
+  --cream: #f5efe0;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-paper-line: var(--paper-line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-amber-bg: var(--amber-bg);
+  --color-moss: var(--moss);
+  --color-rust: var(--rust);
+  --color-cream: var(--cream);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0e0c08;
+    --paper-soft: #181510;
+    --paper-line: #2a251c;
+    --ink: #f0ead8;
+    --ink-soft: #c4bda8;
+    --ink-mute: #7a7468;
+    --amber: #e89160;
+    --amber-soft: #c8612a;
+    --amber-bg: #2a1f14;
+    --moss: #98b46f;
+    --rust: #d4673a;
+    --cream: #1a160e;
   }
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(200, 97, 42, 0.05), transparent 40%),
+    radial-gradient(circle at 92% 88%, rgba(94, 122, 61, 0.04), transparent 45%);
+  background-attachment: fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(232, 145, 96, 0.08), transparent 40%),
+      radial-gradient(circle at 92% 88%, rgba(152, 180, 111, 0.04), transparent 45%);
+  }
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--amber);
+  color: var(--paper);
+}
+
+.dotgrid {
+  background-image: radial-gradient(circle, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: var(--len, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--paper-soft) 0%,
+    var(--paper-line) 50%,
+    var(--paper-soft) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.route-arc {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: draw-line 2.2s 0.4s ease-out forwards;
+}
+
+.dot-active {
+  animation: pulse-soft 1.4s ease-in-out infinite;
 }

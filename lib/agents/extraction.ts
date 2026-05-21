@@ -94,14 +94,32 @@ export async function extractShipment(raw_input: string): Promise<ExtractionResu
   const r = result.object as z.infer<typeof RawExtraction>;
   const warnings: string[] = [];
 
+  const looksLikeNoShipment =
+    !r.origin_text ||
+    !r.destination_text ||
+    r.origin_text.toLowerCase() === "null" ||
+    r.destination_text.toLowerCase() === "null" ||
+    r.origin_text.toLowerCase() === "unknown" ||
+    r.destination_text.toLowerCase() === "unknown";
+
+  if (looksLikeNoShipment) {
+    throw new Error(
+      "Could not find a shipment in your message. Paste a forwarder request with at least an origin, destination, and weight.",
+    );
+  }
+
   const origin_iata = normalizeAirport(r.origin_text);
   const destination_iata = normalizeAirport(r.destination_text);
 
   if (!origin_iata) {
-    throw new Error(`Could not resolve origin airport from text: "${r.origin_text}"`);
+    throw new Error(
+      `Could not resolve origin airport from "${r.origin_text}". Try an IATA code (e.g. JFK) or a major city name.`,
+    );
   }
   if (!destination_iata) {
-    throw new Error(`Could not resolve destination airport from text: "${r.destination_text}"`);
+    throw new Error(
+      `Could not resolve destination airport from "${r.destination_text}". Try an IATA code (e.g. DUB) or a major city name.`,
+    );
   }
 
   let chargeable = r.chargeable_weight_kg;

@@ -1,7 +1,52 @@
 import "dotenv/config";
+import dns from "node:dns";
+import { Resolver } from "node:dns/promises";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { airlines, airports, lanes, rates } from "./schema";
+
+const resolver = new Resolver();
+resolver.setServers(["1.1.1.1", "8.8.8.8"]);
+
+(dns as unknown as { lookup: (...args: unknown[]) => void }).lookup = (
+  ...args: unknown[]
+) => {
+  const hostname = args[0] as string;
+  let options: { all?: boolean; family?: number } = {};
+  let callback: (...cbArgs: unknown[]) => void;
+  if (typeof args[1] === "function") {
+    callback = args[1] as (...cbArgs: unknown[]) => void;
+  } else {
+    options = (args[1] as typeof options) ?? {};
+    callback = args[2] as (...cbArgs: unknown[]) => void;
+  }
+
+  resolver
+    .resolve4(hostname)
+    .then((addrs) => {
+      if (!addrs || addrs.length === 0) {
+        const err = Object.assign(new Error(`getaddrinfo ENOTFOUND ${hostname}`), {
+          code: "ENOTFOUND",
+          errno: -3008,
+          syscall: "getaddrinfo",
+          hostname,
+        });
+        callback(err);
+        return;
+      }
+      if (options.all) {
+        callback(
+          null,
+          addrs.map((address) => ({ address, family: 4 })),
+        );
+      } else {
+        callback(null, addrs[0], 4);
+      }
+    })
+    .catch((err) => {
+      callback(err);
+    });
+};
 
 const client = postgres(process.env.DATABASE_URL!, { prepare: false, max: 1 });
 const db = drizzle(client);
@@ -38,19 +83,21 @@ const AIRPORTS = [
   { iata: "GRU", name: "Sao Paulo Guarulhos", city: "Sao Paulo", country: "Brazil", region: "Americas" },
 ];
 
+const COMMON_DG = ["dg_class_2", "dg_class_3", "dg_class_6", "dg_class_9"];
+
 const AIRLINES = [
-  { iata: "EK", name: "Emirates SkyCargo", hub_iata: "DXB", reliability_score: 91, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "live_animal", "valuable"] },
-  { iata: "LH", name: "Lufthansa Cargo", hub_iata: "FRA", reliability_score: 92, capabilities: ["temp_controlled", "cool_chain", "frozen", "pharma_gdp", "dg_class_2", "dg_class_3", "dg_class_6", "live_animal", "valuable"] },
-  { iata: "QR", name: "Qatar Airways Cargo", hub_iata: "DOH", reliability_score: 90, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "valuable"] },
-  { iata: "TK", name: "Turkish Cargo", hub_iata: "IST", reliability_score: 84, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp"] },
-  { iata: "CV", name: "Cargolux", hub_iata: "LUX", reliability_score: 89, capabilities: ["temp_controlled", "frozen", "dg_class_2", "dg_class_3", "dg_class_6", "live_animal"] },
-  { iata: "5X", name: "UPS Airlines", hub_iata: "SDF", reliability_score: 96, capabilities: ["temp_controlled", "pharma_gdp", "express"] },
-  { iata: "FX", name: "FedEx Express", hub_iata: "MEM", reliability_score: 97, capabilities: ["temp_controlled", "pharma_gdp", "express"] },
-  { iata: "NH", name: "ANA Cargo", hub_iata: "NRT", reliability_score: 93, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp"] },
-  { iata: "CX", name: "Cathay Pacific Cargo", hub_iata: "HKG", reliability_score: 90, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "live_animal"] },
-  { iata: "AF", name: "Air France-KLM Cargo", hub_iata: "CDG", reliability_score: 87, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "live_animal"] },
-  { iata: "SQ", name: "Singapore Airlines Cargo", hub_iata: "SIN", reliability_score: 92, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp"] },
-  { iata: "EY", name: "Etihad Cargo", hub_iata: "AUH", reliability_score: 86, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp"] },
+  { iata: "EK", name: "Emirates SkyCargo", hub_iata: "DXB", reliability_score: 91, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "live_animal", "valuable", ...COMMON_DG] },
+  { iata: "LH", name: "Lufthansa Cargo", hub_iata: "FRA", reliability_score: 92, capabilities: ["temp_controlled", "cool_chain", "frozen", "pharma_gdp", "live_animal", "valuable", ...COMMON_DG] },
+  { iata: "QR", name: "Qatar Airways Cargo", hub_iata: "DOH", reliability_score: 90, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "valuable", ...COMMON_DG] },
+  { iata: "TK", name: "Turkish Cargo", hub_iata: "IST", reliability_score: 84, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", ...COMMON_DG] },
+  { iata: "CV", name: "Cargolux", hub_iata: "LUX", reliability_score: 89, capabilities: ["temp_controlled", "frozen", "live_animal", ...COMMON_DG] },
+  { iata: "5X", name: "UPS Airlines", hub_iata: "SDF", reliability_score: 96, capabilities: ["temp_controlled", "pharma_gdp", "express", "dg_class_9"] },
+  { iata: "FX", name: "FedEx Express", hub_iata: "MEM", reliability_score: 97, capabilities: ["temp_controlled", "pharma_gdp", "express", "dg_class_9"] },
+  { iata: "NH", name: "ANA Cargo", hub_iata: "NRT", reliability_score: 93, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", ...COMMON_DG] },
+  { iata: "CX", name: "Cathay Pacific Cargo", hub_iata: "HKG", reliability_score: 90, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "live_animal", ...COMMON_DG] },
+  { iata: "AF", name: "Air France-KLM Cargo", hub_iata: "CDG", reliability_score: 87, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", "live_animal", ...COMMON_DG] },
+  { iata: "SQ", name: "Singapore Airlines Cargo", hub_iata: "SIN", reliability_score: 92, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", ...COMMON_DG] },
+  { iata: "EY", name: "Etihad Cargo", hub_iata: "AUH", reliability_score: 86, capabilities: ["temp_controlled", "cool_chain", "pharma_gdp", ...COMMON_DG] },
 ];
 
 type LaneSeed = {
@@ -100,6 +147,29 @@ const LANES: LaneSeed[] = [
 
   { airline_iata: "LH", origin_iata: "FRA", destination_iata: "JFK", routing: ["FRA", "JFK"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 14 },
   { airline_iata: "AF", origin_iata: "CDG", destination_iata: "JFK", routing: ["CDG", "JFK"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 10 },
+
+  { airline_iata: "AF", origin_iata: "JFK", destination_iata: "LHR", routing: ["JFK", "CDG", "LHR"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 10 },
+  { airline_iata: "LH", origin_iata: "JFK", destination_iata: "LHR", routing: ["JFK", "FRA", "LHR"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 14 },
+  { airline_iata: "EK", origin_iata: "JFK", destination_iata: "LHR", routing: ["JFK", "DXB", "LHR"], transit_days_min: 2.0, transit_days_max: 3.0, frequency_per_week: 7 },
+  { airline_iata: "FX", origin_iata: "JFK", destination_iata: "LHR", routing: ["JFK", "MEM", "CDG", "LHR"], transit_days_min: 1.0, transit_days_max: 2.0, frequency_per_week: 6 },
+
+  { airline_iata: "AF", origin_iata: "SFO", destination_iata: "LHR", routing: ["SFO", "CDG", "LHR"], transit_days_min: 1.5, transit_days_max: 2.5, frequency_per_week: 7 },
+  { airline_iata: "LH", origin_iata: "SFO", destination_iata: "FRA", routing: ["SFO", "FRA"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 7 },
+  { airline_iata: "EK", origin_iata: "SFO", destination_iata: "DXB", routing: ["SFO", "DXB"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 10 },
+
+  { airline_iata: "LH", origin_iata: "JFK", destination_iata: "FRA", routing: ["JFK", "FRA"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 14 },
+  { airline_iata: "AF", origin_iata: "JFK", destination_iata: "CDG", routing: ["JFK", "CDG"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 10 },
+  { airline_iata: "AF", origin_iata: "JFK", destination_iata: "AMS", routing: ["JFK", "CDG", "AMS"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 7 },
+
+  { airline_iata: "AF", origin_iata: "LAX", destination_iata: "LHR", routing: ["LAX", "CDG", "LHR"], transit_days_min: 1.5, transit_days_max: 2.5, frequency_per_week: 7 },
+  { airline_iata: "LH", origin_iata: "LAX", destination_iata: "FRA", routing: ["LAX", "FRA"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 10 },
+
+  { airline_iata: "LH", origin_iata: "LHR", destination_iata: "JFK", routing: ["LHR", "FRA", "JFK"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 14 },
+  { airline_iata: "AF", origin_iata: "LHR", destination_iata: "JFK", routing: ["LHR", "CDG", "JFK"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 10 },
+
+  { airline_iata: "CX", origin_iata: "HKG", destination_iata: "LAX", routing: ["HKG", "LAX"], transit_days_min: 1.0, transit_days_max: 1.5, frequency_per_week: 14 },
+  { airline_iata: "CX", origin_iata: "HKG", destination_iata: "ORD", routing: ["HKG", "ORD"], transit_days_min: 1.5, transit_days_max: 2.0, frequency_per_week: 7 },
+  { airline_iata: "SQ", origin_iata: "SIN", destination_iata: "JFK", routing: ["SIN", "FRA", "JFK"], transit_days_min: 2.0, transit_days_max: 2.5, frequency_per_week: 5 },
 ];
 
 type RateSpec = {
@@ -228,11 +298,23 @@ function rateSpecs(): RateSpec[] {
 }
 
 async function main() {
-  console.log("Seeding airports...");
+  console.log("Clearing existing lanes and rates...");
+  await db.delete(rates);
+  await db.delete(lanes);
+
+  console.log("Upserting airports...");
   await db.insert(airports).values(AIRPORTS).onConflictDoNothing();
 
-  console.log("Seeding airlines...");
-  await db.insert(airlines).values(AIRLINES).onConflictDoNothing();
+  console.log("Upserting airlines (capabilities may have changed)...");
+  for (const a of AIRLINES) {
+    await db
+      .insert(airlines)
+      .values(a)
+      .onConflictDoUpdate({
+        target: airlines.iata,
+        set: { capabilities: a.capabilities, reliability_score: a.reliability_score, name: a.name, hub_iata: a.hub_iata },
+      });
+  }
 
   console.log("Seeding lanes and rates...");
   for (const laneSpec of LANES) {
