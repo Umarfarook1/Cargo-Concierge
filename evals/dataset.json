@@ -1,0 +1,396 @@
+{
+  "version": 1,
+  "description": "30 hand-labeled freight forwarder quote requests with golden shipment fields.",
+  "items": [
+    {
+      "id": "ex-001",
+      "input": "Hi, customer needs a quote: 3 pallets JFK to Dublin, dry general cargo, gross 1200kg, dims 120x100x110cm each, ready Friday, no rush. Thanks.",
+      "expected": {
+        "origin_iata": "JFK",
+        "destination_iata": "DUB",
+        "pieces": 3,
+        "gross_weight_kg": 1200,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-002",
+      "input": "Need rates BLR -> Frankfurt for 480kg pharma (vaccines, GDP required, 2-8C cool chain). 6 pieces, 80x60x80cm. Ready Mon, prefer priority.",
+      "expected": {
+        "origin_iata": "BLR",
+        "destination_iata": "FRA",
+        "pieces": 6,
+        "gross_weight_kg": 480,
+        "commodity_type": "pharma",
+        "service_level": "priority",
+        "special_handling": ["pharma_gdp", "cool_chain"]
+      }
+    },
+    {
+      "id": "ex-003",
+      "input": "AOG, urgent! Aircraft engine part LAX to Tokyo NRT, single piece 380kg, dims 200x140x110, next flight out.",
+      "expected": {
+        "origin_iata": "LAX",
+        "destination_iata": "NRT",
+        "pieces": 1,
+        "gross_weight_kg": 380,
+        "commodity_type": "express",
+        "service_level": "express",
+        "special_handling": ["aog"]
+      }
+    },
+    {
+      "id": "ex-004",
+      "input": "Flowers Miami to Sao Paulo, 900kg total, 9 pieces, need cool chain 2-8C, ready Wed, customer wants delivery by Saturday latest.",
+      "expected": {
+        "origin_iata": "MIA",
+        "destination_iata": "GRU",
+        "pieces": 9,
+        "gross_weight_kg": 900,
+        "commodity_type": "perishable",
+        "service_level": "general",
+        "special_handling": ["cool_chain"]
+      }
+    },
+    {
+      "id": "ex-005",
+      "input": "Quote needed: 1500kg general cargo from JFK to LHR. 5 pallets, ~120x100x140cm each. Ready tomorrow.",
+      "expected": {
+        "origin_iata": "JFK",
+        "destination_iata": "LHR",
+        "pieces": 5,
+        "gross_weight_kg": 1500,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-006",
+      "input": "ORD to FRA, 800kg priority general, 4 pieces 100x80x90, ready Thursday EOD.",
+      "expected": {
+        "origin_iata": "ORD",
+        "destination_iata": "FRA",
+        "pieces": 4,
+        "gross_weight_kg": 800,
+        "commodity_type": "general",
+        "service_level": "priority",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-007",
+      "input": "Hi team, need a rate for fresh salmon, IST to JFK, 600kg, 4 pcs, frozen, ready Friday.",
+      "expected": {
+        "origin_iata": "IST",
+        "destination_iata": "JFK",
+        "pieces": 4,
+        "gross_weight_kg": 600,
+        "commodity_type": "perishable",
+        "service_level": "general",
+        "special_handling": ["frozen"]
+      }
+    },
+    {
+      "id": "ex-008",
+      "input": "Lithium batteries (UN3480) from HKG to FRA, 200kg, 2 pieces, DG class 9, ready 2026-06-01.",
+      "expected": {
+        "origin_iata": "HKG",
+        "destination_iata": "FRA",
+        "pieces": 2,
+        "gross_weight_kg": 200,
+        "commodity_type": "dangerous",
+        "service_level": "general",
+        "special_handling": ["dg_class_9"]
+      }
+    },
+    {
+      "id": "ex-009",
+      "input": "From Cathay HKG to JFK, 2 tonnes general dry cargo, 8 pcs, no special handling, ready next Monday.",
+      "expected": {
+        "origin_iata": "HKG",
+        "destination_iata": "JFK",
+        "pieces": 8,
+        "gross_weight_kg": 2000,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-010",
+      "input": "Pharma vaccines BOM -> JFK, 350kg, 5 pcs 60x40x60, need GDP + 2-8C, ready Tue.",
+      "expected": {
+        "origin_iata": "BOM",
+        "destination_iata": "JFK",
+        "pieces": 5,
+        "gross_weight_kg": 350,
+        "commodity_type": "pharma",
+        "service_level": "general",
+        "special_handling": ["pharma_gdp", "cool_chain"]
+      }
+    },
+    {
+      "id": "ex-011",
+      "input": "Big quote: Singapore SIN -> Frankfurt FRA, 4500kg general cargo, 15 pieces, dim 120x100x100, ready in 3 days.",
+      "expected": {
+        "origin_iata": "SIN",
+        "destination_iata": "FRA",
+        "pieces": 15,
+        "gross_weight_kg": 4500,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-012",
+      "input": "MIA to DXB please, 240kg pharma cold chain, 3 pcs, ready Mon, GDP-certified handling needed.",
+      "expected": {
+        "origin_iata": "MIA",
+        "destination_iata": "DXB",
+        "pieces": 3,
+        "gross_weight_kg": 240,
+        "commodity_type": "pharma",
+        "service_level": "general",
+        "special_handling": ["pharma_gdp", "cool_chain"]
+      }
+    },
+    {
+      "id": "ex-013",
+      "input": "Need express LAX -> ICN, 50kg single box, 60x40x30, ASAP next flight, can pay premium.",
+      "expected": {
+        "origin_iata": "LAX",
+        "destination_iata": "ICN",
+        "pieces": 1,
+        "gross_weight_kg": 50,
+        "commodity_type": "express",
+        "service_level": "express",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-014",
+      "input": "Mumbai -> Frankfurt, 1100kg general cargo, 4 pcs of 110x100x130cm, ready Friday.",
+      "expected": {
+        "origin_iata": "BOM",
+        "destination_iata": "FRA",
+        "pieces": 4,
+        "gross_weight_kg": 1100,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-015",
+      "input": "JFK -> AMS, 700kg priority, 3 pieces, ready Wednesday, customer wants arrival by Saturday.",
+      "expected": {
+        "origin_iata": "JFK",
+        "destination_iata": "AMS",
+        "pieces": 3,
+        "gross_weight_kg": 700,
+        "commodity_type": "general",
+        "service_level": "priority",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-016",
+      "input": "Hi, looking for quote: SFO to Heathrow, 320kg general, 2 pcs 100x80x90, ready Mon morning.",
+      "expected": {
+        "origin_iata": "SFO",
+        "destination_iata": "LHR",
+        "pieces": 2,
+        "gross_weight_kg": 320,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-017",
+      "input": "Need to ship live tropical fish Singapore to Hong Kong, 80kg, 6 boxes, temp controlled. Ready immediately.",
+      "expected": {
+        "origin_iata": "SIN",
+        "destination_iata": "HKG",
+        "pieces": 6,
+        "gross_weight_kg": 80,
+        "commodity_type": "live_animal",
+        "service_level": "general",
+        "special_handling": ["live_animal", "temp_controlled"]
+      }
+    },
+    {
+      "id": "ex-018",
+      "input": "Customer asks for JFK to FRA, 2300 kg dry cargo, 8 pallets, no DG, ready in 2 days.",
+      "expected": {
+        "origin_iata": "JFK",
+        "destination_iata": "FRA",
+        "pieces": 8,
+        "gross_weight_kg": 2300,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-019",
+      "input": "BLR -> JFK, 240kg pharma cold chain, 4 pcs 60x40x60, ready Tue, urgent priority service please.",
+      "expected": {
+        "origin_iata": "BLR",
+        "destination_iata": "JFK",
+        "pieces": 4,
+        "gross_weight_kg": 240,
+        "commodity_type": "pharma",
+        "service_level": "priority",
+        "special_handling": ["pharma_gdp", "cool_chain"]
+      }
+    },
+    {
+      "id": "ex-020",
+      "input": "Need quote for DEL to FRA, 600kg general cargo, 4 pieces, no special handling, ready next Monday.",
+      "expected": {
+        "origin_iata": "DEL",
+        "destination_iata": "FRA",
+        "pieces": 4,
+        "gross_weight_kg": 600,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-021",
+      "input": "AOG! Engine spare LAX to NRT, 280kg single piece, next flight, customer pays whatever.",
+      "expected": {
+        "origin_iata": "LAX",
+        "destination_iata": "NRT",
+        "pieces": 1,
+        "gross_weight_kg": 280,
+        "commodity_type": "express",
+        "service_level": "express",
+        "special_handling": ["aog"]
+      }
+    },
+    {
+      "id": "ex-022",
+      "input": "ORD to CDG, 850kg general, 5 pcs of 100x80x100, ready in 4 days, normal service.",
+      "expected": {
+        "origin_iata": "ORD",
+        "destination_iata": "CDG",
+        "pieces": 5,
+        "gross_weight_kg": 850,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-023",
+      "input": "Need rates ORD to LUX, 950kg general 6 pieces, ready Friday.",
+      "expected": {
+        "origin_iata": "ORD",
+        "destination_iata": "LUX",
+        "pieces": 6,
+        "gross_weight_kg": 950,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-024",
+      "input": "JFK -> CDG, 550kg general 3 pieces, priority service, ready Thu.",
+      "expected": {
+        "origin_iata": "JFK",
+        "destination_iata": "CDG",
+        "pieces": 3,
+        "gross_weight_kg": 550,
+        "commodity_type": "general",
+        "service_level": "priority",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-025",
+      "input": "Pharma BLR -> Frankfurt, 1200kg, 8 pieces 80x60x90, GDP cool chain 2-8C, priority, ready Wed.",
+      "expected": {
+        "origin_iata": "BLR",
+        "destination_iata": "FRA",
+        "pieces": 8,
+        "gross_weight_kg": 1200,
+        "commodity_type": "pharma",
+        "service_level": "priority",
+        "special_handling": ["pharma_gdp", "cool_chain"]
+      }
+    },
+    {
+      "id": "ex-026",
+      "input": "DXB to JFK 1800kg general 7 pcs ready Saturday, customer prefers EK.",
+      "expected": {
+        "origin_iata": "DXB",
+        "destination_iata": "JFK",
+        "pieces": 7,
+        "gross_weight_kg": 1800,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-027",
+      "input": "Fresh mangoes BOM to JFK, 1600kg, 12 pcs, perishable cool chain, ready Mon, customer wants 2-day transit.",
+      "expected": {
+        "origin_iata": "BOM",
+        "destination_iata": "JFK",
+        "pieces": 12,
+        "gross_weight_kg": 1600,
+        "commodity_type": "perishable",
+        "service_level": "priority",
+        "special_handling": ["cool_chain"]
+      }
+    },
+    {
+      "id": "ex-028",
+      "input": "FRA -> JFK, 1100kg general 5 pieces, ready Friday EOD, no special handling.",
+      "expected": {
+        "origin_iata": "FRA",
+        "destination_iata": "JFK",
+        "pieces": 5,
+        "gross_weight_kg": 1100,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-029",
+      "input": "Quote please CDG to JFK, 750kg, 4 pcs 100x80x110, priority service, ready in 2 days.",
+      "expected": {
+        "origin_iata": "CDG",
+        "destination_iata": "JFK",
+        "pieces": 4,
+        "gross_weight_kg": 750,
+        "commodity_type": "general",
+        "service_level": "priority",
+        "special_handling": []
+      }
+    },
+    {
+      "id": "ex-030",
+      "input": "Frankfurt to JFK, 3200kg general dry cargo, 10 pallets 120x100x140, no DG, ready next Friday.",
+      "expected": {
+        "origin_iata": "FRA",
+        "destination_iata": "JFK",
+        "pieces": 10,
+        "gross_weight_kg": 3200,
+        "commodity_type": "general",
+        "service_level": "general",
+        "special_handling": []
+      }
+    }
+  ]
+}
