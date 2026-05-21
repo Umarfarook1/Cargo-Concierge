@@ -183,16 +183,40 @@ export default function Home() {
       </main>
 
       <footer className="mt-16 border-t border-[color:var(--paper-line)]">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--ink-mute)]">
-          <span>Cargo Concierge · prototype · simulated rate data</span>
-          <a
-            href="https://github.com/Umarfarook1/Cargo-Concierge"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-[color:var(--amber)] transition-colors"
-          >
-            github · umarfarook1
-          </a>
+        <div className="max-w-6xl mx-auto px-6 py-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
+            <div>
+              <div className="font-display text-2xl italic text-[color:var(--ink)]">
+                Cargo Concierge
+              </div>
+              <p className="mt-2 text-sm text-[color:var(--ink-soft)] max-w-md leading-relaxed">
+                Built by{" "}
+                <a href="https://github.com/Umarfarook1" target="_blank" rel="noreferrer" className="text-[color:var(--ink)] underline decoration-[color:var(--amber)] underline-offset-4 hover:text-[color:var(--amber)] transition-colors">
+                  Umarfarook Gurramkonda
+                </a>{" "}
+                as a working demo of an agentic freight workflow. Rate data is simulated from public market patterns.
+              </p>
+            </div>
+            <div className="flex items-center gap-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--ink-mute)]">
+              <a
+                href="https://github.com/Umarfarook1/Cargo-Concierge"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[color:var(--amber)] transition-colors"
+              >
+                Source
+              </a>
+              <span className="h-3 w-px bg-[color:var(--paper-line)]" />
+              <a
+                href="https://github.com/Umarfarook1/Cargo-Concierge#evaluation"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[color:var(--amber)] transition-colors"
+              >
+                Evals
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </>
