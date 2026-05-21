@@ -42,7 +42,9 @@ export async function queryRates(req: ShipmentRequest): Promise<{ options: RateO
       if (req.service_level === "priority" && rate.service_level === "economy") continue;
       if (req.service_level === "general" && rate.service_level === "express") continue;
 
-      const requiredHandling = req.special_handling;
+      const requiredHandling = req.special_handling.filter(
+        (h) => h !== "aog" && h !== "fragile",
+      );
       if (requiredHandling.length > 0) {
         const supported = new Set(rate.special_handling_supported);
         const airlineCaps = new Set(airline.capabilities);
