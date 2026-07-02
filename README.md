@@ -40,7 +40,7 @@ git clone https://github.com/umarfarook1/Cargo-Concierge
 cd Cargo-Concierge
 npm install
 cp .env.example .env
-# fill in DATABASE_URL and at least one model API key
+# fill in DATABASE_URL and at least one model API key (see below)
 npm run db:push
 npm run db:seed
 npm run dev
@@ -50,7 +50,7 @@ Open `http://localhost:3000`, click one of the sample requests, hit Get quote.
 
 **Database:** any Postgres. Supabase or Neon free tier is the path of least resistance.
 
-**Models:** one provider key is enough. The chain falls back through `PRIMARY_MODEL`, `FALLBACK_MODEL`, `SECONDARY_FALLBACK_MODEL` if a call errors or rate-limits.
+**Models:** one provider key is enough. The chain falls back through `PRIMARY_MODEL`, `FALLBACK_MODEL`, `SECONDARY_FALLBACK_MODEL` if a call errors or rate-limits. Each is a `provider:model` string (`google`, `anthropic`, or `openai`), and all three default to `google:gemini-2.5-flash`, so with defaults you only need `GOOGLE_GENERATIVE_AI_API_KEY`. Set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` instead if you point the chain at those providers.
 
 ## Stack
 
