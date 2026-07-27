@@ -18,20 +18,33 @@ The whole thing streams stage by stage, so you can watch the pipeline work.
 
 ## Headline results
 
-Gemini 2.5 Flash, 30-item eval set, run 2026-05-21:
+Every number below comes from `evals/results/ablations.md`, committed and
+rerunnable. Gemini Flash, 15-item hand-labelled set, run 2026-05-21.
 
-| Metric | Result |
-|---|---|
-| Per-shipment accuracy (every field correct) | **24 / 30 · 80.0%** |
-| Origin / destination IATA | 100% / 100% |
-| Pieces / gross weight | 100% / 100% |
-| Commodity type | 90.0% |
-| Service level | 96.7% |
-| Special-handling tags (set exact match) | 93.3% |
-| Extraction latency · p50 / p95 / mean | 3.5s / 8.4s / 4.3s |
-| Estimated cost per full quote (5-6 LLM calls) | ~$0.002 |
+| Variant | Exact-match shipments | Mean latency |
+|---|---|---|
+| Flash, full instruction block | **14 / 15 · 93.3%** | 2,680 ms |
+| Flash, commodity and DG hints removed | 9 / 15 · 60.0% | 3,443 ms |
+| Flash, minimal instructions | 10 / 15 · 66.7% | 3,092 ms |
+| Flash-Lite, full instruction block | 9 / 15 · 60.0% | 1,440 ms |
 
-The 80% perfect-tuple accuracy is the strict measure: every one of the seven fields must be exactly right, with weight allowed a ±5% tolerance. Per-field accuracy stays at 90%+ across the board, with origin / destination / pieces / gross weight at 100%.
+Per-field accuracy on the winning variant: origin IATA, destination IATA,
+pieces, gross weight and commodity type all at 100%, service level at 93%.
+
+The result worth reading is the 33-point gap between rows one and two. Both
+runs use the same model and the same 15 emails. The only difference is a
+paragraph of commodity and dangerous-goods hints in the prompt, and removing
+it costs five shipments. Flash-Lite is twice as fast and lands in the same
+place as the ablated prompt, so the instruction block buys more accuracy here
+than the larger model does.
+
+### About the 30-item run
+
+`evals/results/extraction.md` records a 30-item strict-tuple eval at 0/30.
+That run never reached the model: every case failed with a missing
+`GOOGLE_GENERATIVE_AI_API_KEY`. It is committed as-is because deleting a
+failed run and keeping the good one is how eval harnesses start lying. No
+accuracy figure is claimed from it, and it needs a rerun with a key present.
 
 ## Quickstart
 
