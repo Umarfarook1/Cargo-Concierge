@@ -20,6 +20,10 @@ Generated: 2026-05-21T03:48:36.030Z. Sample size: 15 items.
 
 ## Takeaways
 
-The prompt is doing work. Stripping the commodity and DG class hints reduces accuracy noticeably, especially on commodity classification and special-handling tags. The minimal-instructions variant degrades further · LLMs need the schema laid out explicitly to be reliable on this task.
+The prompt is doing work. The variant labelled `no commodity / DG hints` above drops four rules at once (commodity definitions, service level, special handling, "do not invent"), so the run shows the size of the loss on commodity and service-level classification but not which rule causes it. `evals/ablations.ts` now names that variant `no rules block`. The minimal-instructions variant degrades further.
 
-Flash-Lite is cheaper and faster but trades a few points of accuracy on commodity and service-level classification. For production we keep Flash; Flash-Lite is a fallback when latency or cost spikes.
+The six fields above are everything this harness grades. special_handling is not compared here; evals/run.ts grades it on the full 30-item set.
+
+Flash-Lite is faster and trades points of accuracy on commodity and service-level classification. For production we keep Flash; Flash-Lite is a fallback when latency spikes.
+
+The numbers and the timestamp in this file are the 2026-05-21 run untouched. Only the takeaway prose was corrected, on 2026-07-27, because it claimed a special-handling effect this harness does not measure.

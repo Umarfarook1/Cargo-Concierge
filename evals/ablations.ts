@@ -43,7 +43,9 @@ Rules:
 
 const MINIMAL_INSTRUCTIONS = `Extract shipment fields from the message.`;
 
-const NO_HINTS_INSTRUCTIONS = `Extract structured shipment fields.
+// Drops four rules from FULL_INSTRUCTIONS at once: the commodity definitions,
+// the service-level rule, the special-handling rule, and "Do not invent."
+const NO_RULES_INSTRUCTIONS = `Extract structured shipment fields.
 
 Rules:
 - Pull every field present. Set unknowns to null.
@@ -57,8 +59,8 @@ const VARIANTS: Variant[] = [
     model: google("gemini-2.5-flash") as MastraModelConfig,
   },
   {
-    name: "Flash · no commodity / DG hints",
-    instructions: NO_HINTS_INSTRUCTIONS,
+    name: "Flash · no rules block",
+    instructions: NO_RULES_INSTRUCTIONS,
     model: google("gemini-2.5-flash") as MastraModelConfig,
   },
   {
@@ -211,11 +213,15 @@ async function main() {
   lines.push("## Takeaways");
   lines.push("");
   lines.push(
-    "The prompt is doing work. Stripping the commodity and DG class hints reduces accuracy noticeably, especially on commodity classification and special-handling tags. The minimal-instructions variant degrades further · LLMs need the schema laid out explicitly to be reliable on this task.",
+    "The prompt is doing work. The no-rules-block variant drops four rules at once (commodity definitions, service level, special handling, \"do not invent\"), so the run shows the size of the loss on commodity and service-level classification but not which rule causes it. The minimal-instructions variant degrades further.",
   );
   lines.push("");
   lines.push(
-    "Flash-Lite is cheaper and faster but trades a few points of accuracy on commodity and service-level classification. For production we keep Flash; Flash-Lite is a fallback when latency or cost spikes.",
+    "The six fields above are everything this harness grades. special_handling is not compared here; evals/run.ts grades it on the full 30-item set.",
+  );
+  lines.push("");
+  lines.push(
+    "Flash-Lite is faster and trades points of accuracy on commodity and service-level classification. For production we keep Flash; Flash-Lite is a fallback when latency spikes.",
   );
 
   const md = lines.join("\n");

@@ -1,6 +1,6 @@
 # Cargo Concierge
 
-A small prototype of a freight forwarder copilot. You paste a customer email asking for a quote, and you get back ranked airline options plus a draft reply, in about twelve seconds.
+A small prototype of a freight forwarder copilot. You paste a customer email asking for a quote, and you get back ranked airline options plus a draft reply.
 
 **Live demo:** [cargo-concierge.vercel.app](https://cargo-concierge.vercel.app)
 
@@ -9,7 +9,7 @@ I built this after looking at how forwarders actually spend their day. The hones
 ## How it works
 
 1. Pull the shipment fields out of the email. Free text in, structured object out, validated with Zod.
-2. Query rates from 12 airlines across 48 lanes (seeded from public market patterns). Filter by capacity, commodity rules, weight band, special handling.
+2. Query rates from 12 airlines across 46 lanes (seeded from public market patterns). Filter by capacity, commodity rules, weight band, special handling.
 3. Score the candidates with a deterministic composite (price, transit, reliability, capacity). The weights shift based on the customer's service level. AOG cares about transit; general cares about price.
 4. Write a one-line rationale per option. Pick a winner with a paragraph.
 5. Draft the reply email the forwarder can send back.
@@ -24,19 +24,32 @@ rerunnable. Gemini Flash, 15-item hand-labelled set, run 2026-05-21.
 | Variant | Exact-match shipments | Mean latency |
 |---|---|---|
 | Flash, full instruction block | **14 / 15 · 93.3%** | 2,680 ms |
-| Flash, commodity and DG hints removed | 9 / 15 · 60.0% | 3,443 ms |
+| Flash, rules block removed | 9 / 15 · 60.0% | 3,443 ms |
 | Flash, minimal instructions | 10 / 15 · 66.7% | 3,092 ms |
 | Flash-Lite, full instruction block | 9 / 15 · 60.0% | 1,440 ms |
+
+Exact match here means origin IATA, destination IATA, pieces, gross weight,
+commodity type and service level are all correct. `evals/ablations.ts` grades
+those six fields and does not compare `special_handling`, so the DG and
+cool-chain tags carried by 7 of the 15 cases sit outside this number. The
+30-item harness in `evals/run.ts` does grade `special_handling`; the ablations
+do not.
 
 Per-field accuracy on the winning variant: origin IATA, destination IATA,
 pieces, gross weight and commodity type all at 100%, service level at 93%.
 
 The result worth reading is the 33-point gap between rows one and two. Both
-runs use the same model and the same 15 emails. The only difference is a
-paragraph of commodity and dangerous-goods hints in the prompt, and removing
-it costs five shipments. Flash-Lite is twice as fast and lands in the same
-place as the ablated prompt, so the instruction block buys more accuracy here
-than the larger model does.
+runs use the same model and the same 15 emails. Row two removes one block of
+the prompt that holds four rules at once: the commodity definitions, the
+service-level rule, the special-handling rule, and the "do not invent" line.
+That costs five shipments, three of them on service level and two on
+commodity. The run does not say which of the four rules does the work.
+Flash-Lite is twice as fast and lands in the same place as the ablated prompt,
+so the instruction block buys more accuracy here than the larger model does.
+
+`evals/results/ablations.md` labels row two `no commodity / DG hints`. That was
+the variant's name at run time and the run record keeps it. `evals/ablations.ts`
+now calls it `no rules block`, which is what the variant has always removed.
 
 ### About the 30-item run
 
@@ -109,11 +122,11 @@ This prints a per-field accuracy table and writes `evals/results/extraction.md`.
 | Variant | Accuracy | Mean latency |
 |---|---|---|
 | Flash · full instructions | **14/15 · 93.3%** | 2,680ms |
-| Flash · no commodity / DG hints | 9/15 · 60.0% | 3,443ms |
+| Flash · no rules block | 9/15 · 60.0% | 3,443ms |
 | Flash · minimal instructions | 10/15 · 66.7% | 3,092ms |
 | Flash-Lite · full instructions | 9/15 · 60.0% | 1,440ms |
 
-**Takeaway:** the instruction block is worth roughly **+33 percentage points** of accuracy. Stripping the commodity definitions and DG-class hints drops commodity classification from 100% to 87% and service-level classification from 93% to 73%. Flash-Lite is half the latency but trades the same kind of accuracy.
+**Takeaway:** removing the rules block costs about **33 percentage points** of accuracy. The block holds the commodity definitions, the service-level rule, the special-handling rule and the "do not invent" line together. Of the graded fields, commodity classification falls from 100% to 87% and service level from 93% to 73%. Because one variant removes four rules at once, the run cannot attribute either drop to a single rule. Splitting them into separate variants is a run I have not done. Flash-Lite is half the latency and loses the same kind of accuracy.
 
 Re-run with `npm run eval:ablations`.
 
@@ -132,7 +145,8 @@ lib/
     index.ts                pipeline orchestrator
   db/
     schema.ts               drizzle tables
-    seed.ts                 12 airlines, 29 airports, 30 lanes, rates
+    seed.ts                 12 airlines, 29 airports, 46 lanes, rates
+    seed-stats.ts           counts what seed.ts seeds, no DB needed
   airports.ts               IATA alias resolution
   llm.ts                    model chain with fallback
   schemas.ts                shared Zod contracts
@@ -145,7 +159,7 @@ evals/
 ## What's missing (honest list)
 
 - **Simulated data.** Airline names are real. Rates, capacity, transit times, reliability scores are simulated from public patterns. No real airline API is integrated.
-- **Lane coverage is narrow.** 30 lanes across 29 airports. Adding more is a one-line append in `lib/db/seed.ts`, but real coverage means an ETL from carrier rate sheets.
+- **Lane coverage is narrow.** 46 lanes covering 36 origin and destination pairs, touching 21 of the 29 seeded airports. The other 8 are transit hops or unused. `npm run stats:seed` prints these counts straight from `lib/db/seed.ts`. Adding more lanes is a one-line append there, but real coverage means an ETL from carrier rate sheets.
 - **No customs, no DG paperwork.** A production version needs IATA DGR validation, HS code lookup, AWB generation. Out of scope for the prototype.
 - **No retry loop on extraction.** If the LLM returns invalid JSON the call fails. The right fix is to re-prompt with the validation error, which I want to add.
 - **No memory or session.** Each request is independent. Multi-turn ("what if we shift to Tuesday?") is the natural next step.

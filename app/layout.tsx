@@ -22,7 +22,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Cargo Concierge",
   description:
-    "Agentic freight forwarder copilot. Paste a quote request, get ranked airline options and a draft reply in under fifteen seconds.",
+    "Agentic freight forwarder copilot. Paste a quote request, get ranked airline options and a draft reply.",
 };
 
 export default function RootLayout({

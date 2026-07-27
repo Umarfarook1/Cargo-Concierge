@@ -23,7 +23,7 @@ export function EmptyState() {
           What you&apos;ll get
         </p>
         <h2 className="mt-2 font-display text-2xl sm:text-3xl leading-tight text-[color:var(--ink)]">
-          Four stages, about twelve seconds, one ready-to-send reply.
+          Four stages, one ready-to-send reply.
         </h2>
       </header>
 
@@ -54,7 +54,7 @@ export function EmptyState() {
           <path d="M2 7l3 3 7-7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         <span className="font-mono uppercase tracking-wider text-[10px]">
-          Demo data · 12 airlines · 48 lanes seeded
+          Demo data · 12 airlines · 46 lanes seeded
         </span>
       </div>
     </motion.div>

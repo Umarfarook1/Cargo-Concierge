@@ -11,6 +11,7 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx lib/db/seed.ts",
+    "stats:seed": "tsx lib/db/seed-stats.ts",
     "eval": "tsx evals/run.ts",
     "eval:ablations": "tsx evals/ablations.ts"
   },

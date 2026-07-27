@@ -5,9 +5,8 @@ import { RouteGraphic } from "./route-graphic";
 
 const STATS = [
   { value: "12", label: "Airlines" },
-  { value: "48", label: "Lanes" },
+  { value: "46", label: "Lanes" },
   { value: "30", label: "Eval cases" },
-  { value: "≈12s", label: "End to end" },
 ];
 
 export function Hero() {
@@ -45,14 +44,14 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-6 max-w-xl text-base sm:text-lg text-[color:var(--ink-soft)] leading-relaxed"
         >
-          Paste a customer email asking for a rate. Get ranked airline options and a draft reply in under fifteen seconds. No tab juggling, no copy-paste, no rate-sheet PDFs.
+          Paste a customer email asking for a rate. Get ranked airline options and a draft reply, streamed stage by stage. No tab juggling, no copy-paste, no rate-sheet PDFs.
         </motion.p>
 
         <motion.dl
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 max-w-2xl"
+          className="mt-10 grid grid-cols-3 gap-x-4 gap-y-3 max-w-lg"
         >
           {STATS.map((s) => (
             <div key={s.label} className="border-l border-[color:var(--paper-line)] pl-3">

@@ -92,9 +92,9 @@ export function Architecture() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          <StatCard label="Single LLM call" value="2 of 5" sub="stages, the rest deterministic" />
-          <StatCard label="Cost per quote" value="~$0.004" sub="Gemini 2.5 Flash" />
-          <StatCard label="End-to-end p50" value="~12s" sub="from paste to drafted email" />
+          <StatCard label="Stages that call a model" value="3 of 5" sub="extract, rank rationales, draft" />
+          <StatCard label="LLM calls per quote" value="up to 6" sub="1 extraction, 3 rationales, 1 recommendation, 1 draft" />
+          <StatCard label="Extraction latency" value="2,680 ms" sub="mean over 15 cases, ablation run 2026-05-21" />
         </div>
       </div>
     </section>
